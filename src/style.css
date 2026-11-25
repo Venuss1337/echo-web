@@ -1,0 +1,187 @@
+@import '@fontsource-variable/stack-sans-notch/wght.css';
+@import '@fontsource-variable/stack-sans-text/wght.css';
+
+:root {
+  --paper: #eff0f2;
+  --ink: #17182e;
+  --on: #f4f4f6;
+  --notch: 'Stack Sans Notch Variable', 'Arial Narrow', system-ui, sans-serif;
+  --text: 'Stack Sans Text Variable', system-ui, sans-serif;
+  --gut: clamp(20px, 3.2vw, 64px);
+  --blade: cubic-bezier(0.7, 0, 0.15, 1);
+}
+
+* { box-sizing: border-box; margin: 0; }
+html { background: var(--paper); color: var(--ink); -webkit-text-size-adjust: 100%; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: clip; }
+body { font: 400 clamp(15px, 0.72vw + 7.2px, 23px) / 1.42 var(--text); overflow-x: clip; }
+a { color: inherit; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; border-radius: 2px; }
+.sr, .live .words { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip { position: fixed; z-index: 30; left: var(--gut); top: -80px; padding: 10px 16px; background: var(--ink); color: var(--on); }
+.skip:focus { top: 14px; }
+
+.lead, .head, .words { font-family: var(--notch); font-weight: 500; letter-spacing: -0.03em; line-height: 0.96; text-wrap: balance; }
+.head { font-size: clamp(38px, 6.1vw, 118px); line-height: 0.92; }
+.lead { font-size: clamp(27px, 3.05vw, 60px); }
+.cut > span { display: block; width: max-content; max-width: 100%; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+
+/* The rail --------------------------------------------------------------- */
+.rail { position: fixed; z-index: 20; inset: 0 0 auto; display: flex; align-items: flex-start; justify-content: space-between; padding: 0 0 0 var(--gut); color: var(--ink); pointer-events: none; }
+.mark { display: block; line-height: 0; padding: 6px; margin: clamp(12px, 1.4vw, 24px) 0 0 -6px; color: var(--ink); transition: color 0.4s, opacity 0.3s; pointer-events: auto; }
+.rail[data-on='dark'] .mark { color: var(--on); }
+.rail.yield .mark { opacity: 0; pointer-events: none; }
+/* A label, glued to the edge of the sheet. White on paper, ink after dark. */
+.label { display: flex; align-items: center; gap: clamp(12px, 1.3vw, 24px); padding: 9px calc(var(--gut) * 0.5) 10px 18px; background: #fbfbfc; box-shadow: 0 1px 1px rgb(20 20 50 / 0.1), 0 5px 14px -4px rgb(20 20 50 / 0.32); pointer-events: auto; transition: background-color 0.2s, color 0.2s, box-shadow 0.2s; }
+.rail[data-on='dark'] .label { background: rgb(18 16 30 / 0.78); color: var(--on); box-shadow: none; }
+.rail nav { display: flex; gap: clamp(12px, 1.3vw, 24px); }
+.label a, .sound { text-decoration: none; font-size: 14px; line-height: 20px; }
+.label a, .sound span { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1.5px no-repeat; transition: background-size 0.35s var(--blade); }
+.label a:hover, .sound:hover span, .label a[aria-current] { background-size: 100% 1.5px; }
+.sound { min-width: 4.9em; text-align: left; }
+
+/* Prints: what everyone sees without WebGL, or with motion turned down ---- */
+#paper { display: none; }
+.still-print img { display: block; width: 100%; height: 100%; object-fit: cover; }
+html:not(.live) section { position: relative; min-height: 100svh; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+html:not(.live) .still-print { height: min(72svh, 62.5vw); overflow: hidden; }
+html:not(.live) .pin { padding: clamp(28px, 4vw, 72px) var(--gut) clamp(60px, 8vw, 140px); display: grid; gap: 24px 6vw; align-items: start; grid-template-columns: minmax(0, 1fr); }
+html:not(.live) .cut > span { display: inline; }
+html:not(.live) .words { font-size: clamp(34px, 5.4vw, 100px); }
+html:not(.live) :is(.cover-press, .records, .sound, .light-d, .radio-body) { display: none; }
+html:not(.live) .rail { position: absolute; }
+html:not(.live) .links > span { display: block; margin-bottom: 8px; }
+html:not(.live) .source-more > * + *, html:not(.live) .source-copy > * + * { margin-top: 1em; }
+@media (min-width: 900px) {
+  html:not(.live) .pin { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
+  html:not(.live) .pin > :first-child { grid-row: span 3; }
+}
+
+/* The film ---------------------------------------------------------------- */
+.live body { background: var(--paper); }
+.live #paper { display: block; position: fixed; inset: 0; width: 100vw; height: 100lvh; touch-action: pan-y; opacity: 0; transition: opacity 0.25s; }
+.live.ready #paper { opacity: 1; }
+.live .still-print { display: none; }
+.live section { position: relative; height: calc(var(--len) * 100lvh); pointer-events: none; }
+/* The page is its full length before the film arrives, so the browser can keep its place. The same numbers as data-len. */
+#cover { --len: 2; } #folder { --len: 2.9; } #sleeve { --len: 1.1; } #player { --len: 3.9; } #light { --len: 4; } #library { --len: 3.8; } #radio { --len: 3.4; } #compact { --len: 2; } #source { --len: 4; }
+.live .pin { position: fixed; z-index: 5; inset: 0; height: 100svh; pointer-events: none; visibility: hidden; transition: visibility 0s 0.8s; }
+.live .pin.on { visibility: visible; transition: visibility 0s; }
+.live .pin.on :is(a, button) { pointer-events: auto; }
+.live .pin > * { position: absolute; }
+.cover-press .touch { display: none; }
+@media (pointer: coarse) { .live .cover-press .fine { display: none; } .live .cover-press .touch { display: block; } }
+.cuttable { cursor: crosshair; user-select: none; }
+
+/* Type is cut in and cut away. It is never half there for long. */
+.live .cut > span { white-space: nowrap; clip-path: polygon(-4% -20%, -4% -20%, -16% 125%, -16% 125%); transition: clip-path 0.5s var(--blade) calc(var(--i) * 18ms); }
+.live .cut.in > span { clip-path: polygon(-4% -20%, 118% -20%, 106% 125%, -16% 125%); transition: clip-path 0.72s var(--blade) calc(var(--i) * 45ms); }
+.live .cut.gone > span { clip-path: polygon(118% -20%, 118% -20%, 106% 125%, 106% 125%); }
+
+.live .lead { left: var(--gut); bottom: calc(var(--gut) * 0.82); }
+.live .cover-note { right: var(--gut); bottom: calc(var(--gut) * 0.9); }
+.live .cover-press { left: 46vw; bottom: calc(var(--gut) * 0.9); }
+
+.live :is(#folder, #sleeve, #light, #radio) .pin { color: var(--on); }
+.live .folder-a { right: var(--gut); bottom: calc(var(--gut) * 0.9); }
+.live .folder-b { left: var(--gut); bottom: calc(var(--gut) * 0.9); }
+.live .sleeve-line { left: var(--gut); bottom: calc(var(--gut) * 0.9); font-family: var(--notch); font-size: clamp(24px, 2.6vw, 52px); line-height: 1.02; letter-spacing: -0.025em; }
+
+.live .player-body { left: var(--gut); bottom: calc(var(--gut) * 0.95); }
+
+.live .light-head { left: var(--gut); top: 12vh; }
+.live .light-b { left: var(--gut); top: 13vh; }
+.light-b .body { font-family: var(--notch); font-size: clamp(26px, 3vw, 60px); line-height: 1; letter-spacing: -0.025em; }
+.swatches { display: grid; gap: 0.5em; margin-top: 1.4em; }
+.swatches .cut > span { display: flex; align-items: center; gap: 0.9em; margin: 0; padding: 0; }
+.swatches i { width: 3.4em; height: 2.2em; background: #1c424a; border: 3px solid #f7f7f9; clip-path: polygon(1% 4%, 99% 0, 100% 95%, 0 100%); transition: background-color 0.6s var(--blade); }
+.live .light-c { left: var(--gut); top: 13vh; font-family: var(--notch); font-size: clamp(26px, 3vw, 60px); line-height: 1; letter-spacing: -0.025em; }
+.live .light-d { right: var(--gut); top: 13vh; font-family: var(--notch); font-size: clamp(26px, 3vw, 60px); line-height: 1; letter-spacing: -0.025em; }
+.live .records { left: var(--gut); bottom: calc(var(--gut) * 0.85); display: flex; flex-direction: column; align-items: flex-start; }
+.records button { font-family: var(--notch); font-size: clamp(20px, 2vw, 40px); line-height: 1.22; letter-spacing: -0.02em; opacity: 0.88; transition: opacity 0.3s, transform 0.5s var(--blade); }
+.records button:hover { opacity: 1; }
+.records button[aria-pressed='true'] { opacity: 1; transform: translateX(0.6em); }
+.records .cut > span, .live .records.cut > span { padding-right: 1em; }
+
+.live .library-head { left: var(--gut); top: 13vh; }
+.live .library-body { left: var(--gut); top: calc(13vh + clamp(38px, 6.1vw, 118px) * 2.15); }
+.live .library-more { left: var(--gut); bottom: calc(var(--gut) * 0.95); }
+
+.live .radio-head { left: var(--gut); top: 13vh; }
+.live .radio-body { left: var(--gut); top: calc(13vh + clamp(38px, 6.1vw, 118px) * 2.15); }
+.live .radio-more { left: var(--gut); bottom: calc(var(--gut) * 0.95); }
+
+.live .compact-head { left: var(--gut); top: 39vh; letter-spacing: -0.022em; }
+.live .compact-body { left: var(--gut); top: calc(39vh + clamp(38px, 6.1vw, 118px) * 1.3); }
+
+.live #source .pin { transition: color 0.5s; }
+.live .rail[data-on='dark'] ~ main #source .pin { color: var(--on); }
+.live .source-head { left: var(--gut); bottom: calc(var(--gut) * 0.85); font-size: clamp(36px, 5vw, 96px); }
+.live .source-copy { left: 41vw; bottom: calc(var(--gut) * 0.9); }
+.live .source-more { left: 70vw; right: var(--gut); bottom: calc(var(--gut) * 0.9); }
+.source-copy > * + *, .source-more > * + * { margin-top: 0.9em; }
+.links { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35em; }
+.links a { font-family: var(--notch); font-size: clamp(18px, 1.55vw, 30px); letter-spacing: -0.02em; line-height: 1.2; text-decoration: none; background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1.5px no-repeat; transition: background-size 0.45s var(--blade); padding-bottom: 2px; }
+.links a:hover { background-size: 0 1.5px; background-position: 100% 100%; }
+.colophon { font-size: 0.88em; }
+
+/* Held upright --------------------------------------------------------------- */
+@media (max-aspect-ratio: 9/10) {
+  :root { --gut: clamp(18px, 5vw, 56px); }
+  body { font-size: clamp(14px, 3.75vw, 21px); line-height: 1.38; }
+  .label { padding: 7px clamp(10px, 3vw, 20px) 8px; gap: clamp(10px, 2.8vw, 22px); }
+  .rail nav { gap: clamp(10px, 2.8vw, 22px); }
+  .label a, .sound { font-size: clamp(13px, 3.4vw, 16px); }
+  .sound { min-width: 4.7em; }
+  .live :is(.head, .light-head, .radio-head, .library-head) { font-size: clamp(31px, 8.6vw, 84px); line-height: 0.95; }
+  .live .lead { font-size: clamp(25px, 7.2vw, 66px); bottom: calc(var(--gut) * 0.7 + clamp(96px, 25vw, 150px)); }
+  .live .cover-note { left: var(--gut); right: auto; bottom: calc(var(--gut) * 0.7 + 2.1em); }
+  .live .cover-press { left: var(--gut); bottom: calc(var(--gut) * 0.7); }
+  .live .cover-press .fine + .fine { display: none; }
+  .live .folder-a { right: auto; left: var(--gut); }
+  .live .sleeve-line { font-size: clamp(24px, 6.4vw, 54px); }
+  .live .player-body { display: none; }
+  .live :is(.light-head, .light-b, .light-c) { top: 9.5vh; }
+  .live .light-d { left: var(--gut); right: auto; top: 9.5vh; }
+  .live :is(.light-c, .light-d), .light-b .body { font-size: clamp(27px, 7.4vw, 66px); }
+  .swatches { gap: 0.4em; margin-top: 0.9em; }
+  .live .records { left: 0; right: 0; bottom: 0; padding: 0 var(--gut) max(6px, env(safe-area-inset-bottom)); flex-direction: row; justify-content: space-between; background: rgb(14 13 24 / 0.72); }
+  .live .records.cut > span { padding-right: 0; }
+  .records button { font-size: clamp(16px, 4.5vw, 36px); min-height: 44px; opacity: 0.9; }
+  .records button[aria-pressed='true'] { transform: none; background: linear-gradient(currentColor, currentColor) 0 calc(100% - 8px) / 100% 1.5px no-repeat; }
+  .live .library-head { top: 9.5vh; }
+  .live .library-body { top: calc(9.5vh + clamp(31px, 8.6vw, 84px) * 2.2); }
+  .live .library-more { bottom: auto; top: calc(9.5vh + clamp(31px, 8.6vw, 84px) * 2.2 + 5.2em); }
+  .live .radio-head { top: 9.5vh; }
+  .live .radio-body { top: calc(9.5vh + clamp(31px, 8.6vw, 84px) * 2.2); bottom: auto; }
+  .live .radio-more { left: var(--gut); right: auto; }
+  .live .compact-head { top: 9.5vh; }
+  .live .compact-body { top: calc(9.5vh + clamp(31px, 8.6vw, 84px) * 1.3); }
+  .live #source .pin { display: flex; flex-direction: column; justify-content: flex-end; gap: 0.9em; padding: 0 var(--gut) calc(var(--gut) * 0.8); }
+  .live #source .pin > * { position: static; width: auto; }
+  .live .source-head { font-size: clamp(34px, 9vw, 84px); }
+  .links a { font-size: clamp(20px, 5.2vw, 40px); line-height: 1.5; }
+  .source-copy > * + *, .source-more > * + * { margin-top: 0.6em; }
+}
+
+/* A phone on its side ------------------------------------------------------- */
+@media (max-width: 959px) and (min-aspect-ratio: 9/10) {
+  .live .cover-press { display: none; }
+  .live .source-head { font-size: 32px; }
+  .live .source-copy { left: 29vw; font-size: 12px; }
+  .live .source-more { left: 61.5vw; font-size: 12px; }
+  .live .links a { font-size: 16px; }
+}
+@media (max-width: 759px) and (min-aspect-ratio: 9/10) {
+  .live .source-head { bottom: auto; top: 13vh; }
+  .live .source-copy { left: var(--gut); }
+  .live .source-more { left: 54vw; }
+}
+@media (max-height: 480px) and (min-aspect-ratio: 9/10) {
+  .live .player-body { display: none; }
+}
+
+@media (forced-colors: active) { .links a, .label a { text-decoration: underline; } }

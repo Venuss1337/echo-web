@@ -1,0 +1,64 @@
+# Private AI-assisted development
+AGENTS.md
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md
+.claude/
+.codex/
+.cursor/
+.cursorrules
+.agents/
+.agent/
+.windsurf/
+.windsurfrules
+.aider*
+.mcp.json
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+.github/agents/
+
+# Private development material
+.private/
+docs/internal/
+docs/agent/
+docs/agents/
+prompts/
+/review/
+CREATIVE_DIRECTION.md
+DESIGN_REVIEW.md
+MOTION_SYSTEM.md
+HANDOFF.md
+DESIGN_HANDOFF.md
+ART_DIRECTION.md
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Never in this repository: installers and applications
+*.exe
+*.msi
+*.msix
+*.dll
+
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+playwright-report/
+test-results/
+*.log
+*.tsbuildinfo
+
+# Operating system and editor artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

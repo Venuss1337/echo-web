@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- head -->
+    <link rel="icon" href="./favicon.ico" sizes="32x32" />
+    <link rel="icon" href="./mark.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <script>
+      // Those who want motion get the film, if their machine turns out to have WebGL 2. Everyone else gets prints.
+      (function () {
+        var d = document.documentElement, film = '@@film@@';
+        function prints() { if (!d.classList.contains('ready')) d.className = 'still'; }
+        var calm = new URLSearchParams(location.search).has('still') || matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (calm || !window.WebGL2RenderingContext) return prints();
+        d.className = 'live';
+        try { if (localStorage.getItem('echo')) d.className += ' again'; } catch (e) {}
+        if (film) {
+          var l = document.createElement('link');
+          l.rel = 'modulepreload';
+          l.href = film;
+          document.head.appendChild(l);
+        }
+        // Nobody is kept at a blank sheet. Twelve seconds without progress and the prints are brought out. Cutting the
+        // first scene can honestly take longer on a slow machine, so that gets twice as long. Forty-five in all.
+        var all = 0, since = 0, at;
+        var watch = setInterval(function () {
+          if (d.classList.contains('ready') || !d.classList.contains('live')) return clearInterval(watch);
+          if (document.hidden) return;
+          if (at !== d.dataset.load) { at = d.dataset.load; since = 0; }
+          all += 0.5;
+          since += 0.5;
+          if (since >= (at === '2' ? 24 : 12) || all >= 45) prints();
+        }, 500);
+        // The script never came.
+        addEventListener('error', function (e) { if (e.target.tagName === 'SCRIPT') prints(); }, true);
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#folder">Skip the cover</a>
+    <div id="wait" aria-hidden="true">
+      <div class="cast">
+        <div class="hang h3"><div class="turn"><canvas class="r3"></canvas></div></div>
+        <div class="hang h2"><div class="turn"><canvas class="r2"></canvas></div></div>
+        <div class="hang h1"><div class="turn"><canvas class="r1"></canvas></div></div>
+      </div>
+      <div class="air"><div class="hang"><div class="turn"><i></i></div></div></div>
+      <div class="fibre"></div>
+    </div>
+    <script>
+      if (document.documentElement.className.indexOf('live') === 0) (function (wait) {
+        // A band of shadow is a step on and a step off, each as soft as the ring is far away.
+        [['r1', 320, 0.02, 0.34], ['r2', 160, 0.052, 0.3], ['r3', 128, 0.1, 0.26]].forEach(function (r) {
+          var far = 1.1 + 3 * r[2], on = function (x) { return 1 / (1 + Math.exp((-1.7 * x) / r[2])); };
+          var c = wait.querySelector('.' + r[0]);
+          c.style.setProperty('--k', far);
+          draw(c, r[1], function (x, y) {
+            var d = Math.sqrt(x * x + y * y) * far;
+            return r[3] * (on(d - 1) - on(d - 1.1));
+          });
+        });
+        // The tooth of the paper, under everything that falls on it.
+        var tile = document.createElement('canvas'), a = [], n = 96;
+        for (var i = 0; i < n * n; i++) a.push(Math.random());
+        draw(tile, n, function (x, y, i) { return 0.02 * (a[i] + a[(i + 1) % (n * n)] + a[(i + n) % (n * n)] + a[(i + n + 1) % (n * n)] - 1.75); });
+        wait.lastElementChild.style.backgroundImage = 'url(' + tile.toDataURL() + ')';
+        function draw(c, n, alpha) {
+          c.width = c.height = n;
+          var g = c.getContext('2d', { willReadFrequently: true }), px = g.createImageData(n, n);
+          for (var i = 0; i < n * n; i++) px.data.set([90, 104, 158, 255 * alpha((((i % n) + 0.5) / n) * 2 - 1, ((Math.floor(i / n) + 0.5) / n) * 2 - 1, i)], i * 4);
+          g.putImageData(px, 0, 0);
+        }
+      })(document.querySelector('#wait'));
+    </script>
+    <canvas id="paper" aria-hidden="true"></canvas>
+
+    <header class="rail">
+      <a class="mark" href="#cover" aria-label="ECHO, back to the cover">
+        <svg viewBox="0 0 34 26" width="34" height="26" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <ellipse cx="11" cy="13" rx="5.2" ry="10.6" transform="rotate(22 11 13)" />
+          <ellipse cx="17" cy="13" rx="5.2" ry="10.6" transform="rotate(22 17 13)" />
+          <ellipse cx="23" cy="13" rx="5.2" ry="10.6" transform="rotate(22 23 13)" />
+        </svg>
+      </a>
+      <div class="label">
+      <nav aria-label="Chapters">
+        <a href="#player">Player</a>
+        <a href="#library">Library</a>
+        <a href="#radio">Radio</a>
+        <a href="#source">Source</a>
+      </nav>
+      <button class="sound" type="button" aria-pressed="false"><span>Sound off</span></button>
+      </div>
+    </header>
+
+    <main id="film">
+      <section id="cover" data-len="2">
+        <div class="still-print"><img src="./stills/cover.webp" alt="The word ECHO cut as windows through thick white paper. Light the colour of a low sun comes out of the O." width="1600" height="1000" loading="lazy" fetchpriority="high" /></div>
+        <div class="pin">
+          <h1 class="sr">ECHO, a local-first music player for Windows</h1>
+          <p class="lead cut" data-cut="cover">
+            <span>A music player</span>
+            <span>for the records you keep</span>
+          </p>
+          <p class="note cover-note cut" data-cut="cover">
+            <!-- release:cover -->
+          </p>
+          <p class="note cover-press cut" data-cut="cover">
+            <span class="fine">Press the paper and it answers.</span>
+            <span class="fine">Drag, and it opens.</span>
+            <span class="touch">Press the paper. It answers.</span>
+          </p>
+        </div>
+      </section>
+
+      <section id="folder" data-len="2.9">
+        <div class="still-print"><img loading="lazy" src="./stills/folder.webp" alt="" width="1600" height="1000" /></div>
+        <div class="pin">
+          <h2 class="words">Somewhere on your drive there&rsquo;s a folder nobody else has</h2>
+          <p class="body folder-a cut" data-cut="folder-a">
+            <span>The bootleg. The demo a friend</span>
+            <span>sent once. The album that left every</span>
+            <span>catalogue and never came back.</span>
+          </p>
+          <p class="body folder-b cut" data-cut="folder-b">
+            <span>ECHO is built around that folder.</span>
+            <span>Nothing is uploaded, nothing expires,</span>
+            <span>and nobody asks for your email.</span>
+          </p>
+        </div>
+      </section>
+
+      <section id="sleeve" data-len="1.1">
+        <div class="still-print"><img loading="lazy" src="./stills/sleeve.webp" alt="A valley of cut paper under rings of sky, lit by a low sun." width="1600" height="1000" /></div>
+        <div class="pin">
+          <p class="body sleeve-line cut" data-cut="sleeve">
+            <span>A record is a place</span>
+            <span>before it is a file.</span>
+          </p>
+        </div>
+      </section>
+
+      <section id="player" data-len="3.9">
+        <div class="still-print"><img loading="lazy" src="./stills/player.webp" alt="ECHO's Now Playing screen on a white wall, its playback dock floating in front of it. Beside it the words Instruments float hang in the air and the words Music doesn't are cut into the wall, lit from inside." width="1600" height="1000" /></div>
+        <div class="pin">
+          <h2 class="words">Instruments float. Music doesn&rsquo;t.</h2>
+          <p class="body player-body cut" data-cut="player">
+            <span>Play, seek and volume hover over the page.</span>
+            <span>The record stays put, square-cornered, and</span>
+            <span>lights everything else. That is the idea</span>
+            <span>behind Atmosphere 2.0, ECHO&rsquo;s interface.</span>
+          </p>
+        </div>
+      </section>
+
+      <section id="light" data-len="4">
+        <div class="still-print"><img loading="lazy" src="./stills/light.webp" alt="A stairwell of square paper landings, turning towards a white light. The playback controls float in front of it, the same blue." width="1600" height="1000" /></div>
+        <div class="pin">
+          <h2 class="head light-head cut" data-cut="light">
+            <span>Change the record</span>
+            <span>and the room changes</span>
+          </h2>
+          <div class="light-b">
+            <p class="body cut" data-cut="light-b">
+              <span>ECHO takes three colours</span>
+              <span>from each sleeve.</span>
+            </p>
+            <div class="swatches" role="img" aria-label="The three colours taken from this sleeve: room, glow and controls">
+              <p class="cut" data-cut="light-b"><span><i></i>one for the room</span></p>
+              <p class="cut" data-cut="light-b"><span><i></i>one for its glow</span></p>
+              <p class="cut" data-cut="light-b"><span><i></i>one for the controls</span></p>
+            </div>
+          </div>
+          <p class="body light-c cut" data-cut="light-c">
+            <span>Each is checked for contrast</span>
+            <span>before any type touches it.</span>
+          </p>
+          <p class="body light-d cut" data-cut="light-d">
+            <span>Press anywhere</span>
+            <span>to play it.</span>
+          </p>
+          <div class="records cut" data-cut="list" role="group" aria-label="Put on a record">
+            <span><button type="button" data-record="1">Undertow</button></span>
+            <span><button type="button" data-record="2">Stairwell</button></span>
+            <span><button type="button" data-record="3">Bloom Count</button></span>
+            <span><button type="button" data-record="4">Arcade</button></span>
+          </div>
+        </div>
+      </section>
+
+      <section id="library" data-len="3.8">
+        <div class="still-print"><img loading="lazy" src="./stills/library.webp" alt="A white wall with forty square windows cut through it, each with its own light." width="1600" height="1000" /></div>
+        <div class="pin">
+          <h2 class="head library-head cut" data-cut="library">
+            <span>Point it at</span>
+            <span>your folders</span>
+          </h2>
+          <p class="body library-body cut" data-cut="library">
+            <span>FLAC, MP3, WAV, OGG, AAC and M4A,</span>
+            <span>read where they already are. ECHO</span>
+            <span>leaves the files alone.</span>
+          </p>
+          <p class="body library-more cut" data-cut="library">
+            <span>Unplug the drive and your playlists,</span>
+            <span>favourites and history stay,</span>
+            <span>waiting for it.</span>
+          </p>
+        </div>
+      </section>
+
+      <section id="radio" data-len="3.4">
+        <div class="still-print"><img loading="lazy" src="./stills/radio.webp" alt="Curtains of blue-lit paper either side of a bright opening." width="1600" height="1000" /></div>
+        <div class="pin">
+          <h2 class="head radio-head cut" data-cut="radio">
+            <span>Radio is the one part</span>
+            <span>that isn&rsquo;t yours</span>
+          </h2>
+          <p class="body radio-body cut" data-cut="radio">
+            <span>So it is the one part of this page</span>
+            <span>that won&rsquo;t hold still. It&rsquo;s live.</span>
+          </p>
+          <p class="body radio-more cut" data-cut="radio">
+            <span>Search the open Radio Browser directory</span>
+            <span>or paste a stream address, MP3 or AAC.</span>
+            <span>Your own queue stays where you left it.</span>
+          </p>
+        </div>
+      </section>
+
+      <section id="compact" data-len="2">
+        <div class="still-print"><img loading="lazy" src="./stills/compact.webp" alt="ECHO's compact edition, small, on a large blank sheet." width="1600" height="1000" /></div>
+        <div class="pin">
+          <h2 class="head compact-head cut" data-cut="compact">
+            <span>Then it makes room</span>
+          </h2>
+          <p class="body compact-body cut" data-cut="compact">
+            <span>The compact edition. A sleeve, a title,</span>
+            <span>a groove. The rest of the desk is yours.</span>
+          </p>
+        </div>
+      </section>
+
+      <section id="source" data-len="3" data-last>
+        <div class="still-print"><img loading="lazy" src="./stills/source.webp" alt="The paper relief from the beginning, after dark. Now the letters light the sheets around them." width="1600" height="1000" /></div>
+        <div class="pin">
+          <h2 class="head source-head cut" data-cut="source">
+            <span>The pattern</span>
+            <span>is public</span>
+          </h2>
+          <div class="source-copy">
+            <p class="body cut" data-cut="source">
+              <span>ECHO is free software, GPL-3.0-or-later,</span>
+              <span>written in Rust and TypeScript.</span>
+              <span>Every cut is in the open.</span>
+            </p>
+            <p class="links cut" data-cut="source">
+              <!-- release:links -->
+            </p>
+            </div>
+          <div class="source-more">
+            <p class="body cut" data-cut="source">
+              <!-- release:status -->
+            </p>
+            <p class="colophon cut" data-cut="source">
+              <span>The records on this page are made up. The</span>
+              <span>interface isn&rsquo;t: every screen is a capture</span>
+              <span>of ECHO&rsquo;s own front end.</span>
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

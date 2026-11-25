@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>A blank sheet. ECHO</title>
+    <meta name="theme-color" content="#eff0f2" />
+    <link rel="icon" href="@@home@@mark.svg" type="image/svg+xml" />
+    <style>
+      @font-face { font-family: 'Stack Sans Notch'; src: url('@@home@@@@notch@@') format('woff2'); font-weight: 200 700; font-display: swap; }
+      @font-face { font-family: 'Stack Sans Text'; src: url('@@home@@@@text@@') format('woff2'); font-weight: 200 700; font-display: swap; }
+      * { box-sizing: border-box; margin: 0; }
+      html { height: 100%; background: #f6f8fd; color: #17182e; }
+      body { min-height: 100%; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.7em; padding: clamp(20px, 3.2vw, 64px); font: 400 clamp(15px, 0.72vw + 7.2px, 23px) / 1.42 'Stack Sans Text', system-ui, sans-serif; background: linear-gradient(62deg, transparent 40%, rgb(92 108 168 / 0.07) 48%, transparent 56%), linear-gradient(-32deg, transparent 46%, rgb(92 108 168 / 0.06) 53%, transparent 60%); }
+      h1 { font: 500 clamp(38px, 6.1vw, 118px) / 0.92 'Stack Sans Notch', system-ui, sans-serif; letter-spacing: -0.03em; }
+      a { color: inherit; text-underline-offset: 0.2em; }
+      :focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+      svg { position: absolute; z-index: -1; right: 6vw; top: 8vh; width: min(46vw, 62vh); height: auto; overflow: visible; }
+    </style>
+  </head>
+  <body>
+    <!-- A ring's shadow, and nothing under it. -->
+    <svg viewBox="0 0 200 238" fill="none" stroke="#5a689e" aria-hidden="true">
+      <ellipse cx="100" cy="119" rx="84" ry="100" stroke-width="9" opacity="0.26" style="filter: blur(1.6px)" />
+      <ellipse cx="122" cy="126" rx="84" ry="100" stroke-width="9" opacity="0.13" style="filter: blur(4px)" />
+      <ellipse cx="144" cy="133" rx="84" ry="100" stroke-width="10" opacity="0.07" style="filter: blur(8px)" />
+    </svg>
+    <h1>This sheet<br />is blank</h1>
+    <p>There is nothing at this address. <a href="@@home@@">Back to the cover</a></p>
+  </body>
+</html>

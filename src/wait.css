@@ -1,0 +1,84 @@
+/* The sheet before it is cut.
+   Nothing is on it but light from the window and the shadow of a paper ring, turning
+   somewhere out of frame. Its echoes hang further off, so they are softer. Where the
+   shadow finally lands is where the O will be.
+
+   Everything here is a transform or an opacity, so it keeps moving while the film is
+   being prepared on the same thread. It sits behind the canvas: it can never be in the way. */
+
+#wait { display: none; }
+.live #wait {
+  /* One unit of the paper world, in pixels, and where its O stands. See stand() in film.ts. */
+  --u: min(100vh / 2.824, 100vw / 4.9);
+  --ox: calc(50vw + 1.505 * var(--u));
+  --oy: calc(50vh - 0.24 * var(--u));
+  --rx: 0.7992;
+  --ry: 0.9504;
+  --delay: 0.12s;
+  display: block;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* The blank sheet as the film will draw it, very small. */
+  background: #f6f8fd url(data:image/webp;base64,UklGRsABAABXRUJQVlA4TLMBAAAvG0AEAOehoG0jJ+GP+Ofd/eCAtm3bUPn/3m6FFbZt29D/n9yh+VebtgEzpueO/csIMAKM60N+H3JRAGFgBIeNiNAYGMPAKASGaO8IIAGGCDnnvn8xDBK0bW7TKOuyyoqxxgMiYk3HJaH3zv0vRg4xf0T/JyD9+wmrSk62z11Qz9akSQxESK2B6r8WyElxuxdeyJokAmLA2PcWAc6H7eviyZo0iT5U47ml98yBMumG07P4JY4+kMzJ5+wyVXbE4geXw7SZp4lqpD/ste0FTlUzsPhiH+wcQFKXIzB5VWGXQ1VZENbT2kCryahSYvHtXHJwRnCqUoDsbKjlT9JU3O4IgNwRAC1ptO8N/4+q+QJNRd0vr9rJnZJVALK/r6fVHEBdcrHUQbcjbwYqxfaymc2bWm1VYrnWgc+pRdZAx8HLcB8IJVUErFEMOmQNoNJxloDeMYwxZapovVoOhD4N2PN3qrCVHE9h6JmA3VK/JCMW/U5jJMaS6133YeiZyt1yELoYBEr+aBwhtk5le1sHL44Ou+X6sA1s0/hXQyWH66Xvx6zny+N+GAhZk/4KSyz717nvVQAA) 50% / 100% 100%;
+}
+/* A visitor who has been here before sees it only if the film is slow to return. */
+.live.again #wait { --delay: 0.5s; }
+
+/* Each ring is seen as its shadow. Where the shadow falls has been worked out along the light already: engines disagree
+   about depth under opacity, so none is asked for. */
+#wait .hang { position: absolute; left: var(--ox); top: var(--oy); opacity: 0; transform: var(--p1); transition: transform 1.7s cubic-bezier(0.16, 0.75, 0.12, 1), opacity 0.9s ease-out; will-change: transform, opacity; }
+#wait .turn { position: absolute; animation: turn 2.9s cubic-bezier(0.37, 0, 0.63, 1) calc(var(--lag) - 0.7s) infinite alternate; will-change: transform; }
+#wait :is(i, canvas) { position: absolute; --k: 1.1; width: calc(2 * var(--rx) * var(--k) * var(--u)); height: calc(2 * var(--ry) * var(--k) * var(--u)); left: calc(-1 * var(--rx) * var(--k) * var(--u)); top: calc(-1 * var(--ry) * var(--k) * var(--u)); will-change: opacity; }
+
+#wait {
+  --p0: translate(calc(0.24 * var(--u)), calc(0.07 * var(--u)));
+  --p1: translate(calc(-0.98 * var(--u)), calc(0.045 * var(--u)));
+  --p2: translate(calc(-0.49 * var(--u)), calc(0.05 * var(--u)));
+  --p3: translate(calc(-0.01 * var(--u)), calc(0.055 * var(--u)));
+  --ring: translate(calc(-1.55 * var(--u)), calc(-0.6 * var(--u))) scale(1.2);
+}
+#wait .h1 { --lag: 0s; animation: arrive 1.5s cubic-bezier(0.16, 0.75, 0.12, 1) var(--delay) both; }
+#wait .h2 { --lag: 0.34s; }
+#wait .h3 { --lag: 0.68s; }
+/* An echo: the same shape, each time further away. One when the film has arrived, one when its sheets are cut. */
+.live:is([data-load='1'], [data-load='2'], [data-load='3']) #wait .h2 { opacity: 1; transform: var(--p2); }
+.live:is([data-load='2'], [data-load='3']) #wait .h3 { opacity: 1; transform: var(--p3); }
+/* They leave the first ring, so they wait for it. */
+.live #wait :is(.h2, .h3) { transition-delay: calc(var(--delay) + 0.3s); }
+
+@keyframes arrive {
+  from { opacity: 0; transform: var(--p0); }
+  to { opacity: 1; transform: var(--p1); }
+}
+/* From wide open to the angle of ECHO's mark. */
+@keyframes turn {
+  from { transform: rotateZ(9deg) rotateY(-52deg); }
+  to { transform: rotateZ(9deg) rotateY(45deg); }
+}
+
+/* The thing itself, out of sight until it is about to touch. White, with a lit edge and a shaded one. */
+#wait .air .hang { transition: none; transform: var(--ring); }
+#wait .air .turn { animation: none; }
+#wait i { border-radius: 50%; border: calc(0.1 * var(--rx) * var(--u)) solid #fdfdff; box-shadow: 0 0 0 0.5px rgb(90 104 158 / 0.16), calc(0.004 * var(--u)) calc(0.005 * var(--u)) calc(0.008 * var(--u)) rgb(70 82 140 / 0.3), inset calc(0.004 * var(--u)) calc(0.005 * var(--u)) calc(0.008 * var(--u)) rgb(70 82 140 / 0.3); }
+#wait .fibre { position: absolute; inset: 0; background-size: 211px; }
+
+@media (max-aspect-ratio: 9/10) {
+  .live #wait { --u: min(100lvh / 5.0446, 50vw); --ox: 50vw; --oy: calc(50lvh + 0.98 * var(--u)); --rx: 0.7104; --ry: 0.5104; height: 100lvh; background-image: url(data:image/webp;base64,UklGRlYBAABXRUJQVlA4TEoBAAAvDMAGAJehqG0jKXkuf747Nwe0bduG6tr/z21NJm2TffNvuPOvsG0bpGPeHf81wGAElkZmDlkRwU8gwBAh9w2W0THePQNjIDaC8Awg2NYWtYmUIf3z5Sekv6UBM88Wiun+d5dNRPQ/kE45xfgtDDIU9se0GXIMC+cWSzkfh2GIgZwhrPb3Y8rpC2QWYLneckqyJAew7B/nJCu8vWwuz30ATQZgifl+FXxOhhk+yPY2wLl38UGG47o5530p7EPIucydZwDMvN5FwDNqBaPEU85volpLvN+jL6jNOh9zPmdq5Fwd+9FzPE7WtjHUlyUquTWMfy+ldSNIL79adbNOWSr+x79U16luplspAXOtlf5XH66WgNqsUtraRhBfatNaGzsRYj9ybdZqbRyy9B7VWaO1pRwlMMgZY0zbbTfrcWRMzjp72O9iFBlB5Aw=);
+    --p0: translate(calc(0.79 * var(--u)), calc(-1.63 * var(--u))) scale(1.3);
+    --p1: translate(calc(-0.32 * var(--u)), calc(-1.7 * var(--u))) scale(1.3);
+    --p2: translate(calc(-0.02 * var(--u)), calc(-1.5 * var(--u))) scale(1.3);
+    --p3: translate(calc(0.27 * var(--u)), calc(-1.3 * var(--u))) scale(1.3);
+    --ring: translate(calc(-0.89 * var(--u)), calc(-2.35 * var(--u))) scale(1.5);
+  }
+}
+
+.live .rail { transition: opacity 0.3s; }
+.live:not(.typed) .rail { opacity: 0; }
+/* Until the film opens, the sheet is white, whatever chapter is underneath. */
+.live:not(.ready) .rail .mark { color: var(--ink); }
+.live:not(.ready) .rail .label { background: #fbfbfc; color: var(--ink); box-shadow: 0 1px 1px rgb(20 20 50 / 0.1), 0 5px 14px -4px rgb(20 20 50 / 0.32); }
+.live:not(.ready) main > section:not(#cover) .pin { visibility: hidden; }
+/* Into the middle of the film: the O opens, and you go in through it. */
+.live.through #paper { transition: none; }

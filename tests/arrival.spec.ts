@@ -129,6 +129,30 @@ test('straight into a chapter, its own scene is what opens', async ({ page }) =>
   expect(found).toEqual([]);
 });
 
+test('where programs cannot be linked alongside drawing, all of them are linked before the opening', async ({ page }) => {
+  const found = watch(page);
+  await page.addInitScript(() => {
+    const get = WebGL2RenderingContext.prototype.getExtension as (n: string) => unknown;
+    (WebGL2RenderingContext.prototype as any).getExtension = function (n: string) { return n === 'KHR_parallel_shader_compile' ? null : get.call(this, n); };
+    const link = WebGL2RenderingContext.prototype.linkProgram;
+    (window as any).late = 0;
+    WebGL2RenderingContext.prototype.linkProgram = function (p) {
+      const fs = this.getAttachedShaders(p)!.map((s) => this.getShaderSource(s)!.length);
+      // The small ones, for the knife, are nothing. The four scenes are not.
+      if (document.documentElement.classList.contains('ready') && Math.max(...fs) > 10_000) (window as any).late++;
+      link.call(this, p);
+    };
+  });
+  await page.goto('./');
+  await page.waitForFunction(() => document.documentElement.dataset.load === '2');
+  expect(await page.evaluate(() => document.documentElement.classList.contains('ready'))).toBe(false);
+  await ready(page);
+  expect(await page.evaluate(() => document.documentElement.dataset.cut)).toBe('4');
+  await page.waitForFunction(() => window.ready === true);
+  expect(await page.evaluate(() => (window as any).late)).toBe(0);
+  expect(found).toEqual([]);
+});
+
 test('scrolling hard as soon as it opens', async ({ page }) => {
   const found = watch(page);
   await page.goto('./');

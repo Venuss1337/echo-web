@@ -233,11 +233,26 @@ export class World {
     (this.shared.uWordBox.value[i] as THREE.Vector4).set(x, y, w, w / this.sayingAspect[i]);
   }
 
-    async compile(progs: Program[] = order) {
+  /** Without this extension (Firefox) programs are linked in turn with everything else: nothing is drawn while one is. */
+  get serial() { return !this.renderer.extensions.has('KHR_parallel_shader_compile'); }
+
+  async compile(progs: Program[] = order) {
     for (const p of progs) {
       this.mesh.material = this.mats[p];
-      await this.renderer.compileAsync(this.scene, this.cam);
+      if (this.serial) await this.linked();
+      else await this.renderer.compileAsync(this.scene, this.cam);
     }
+  }
+
+  /** Links the current material. Asking a program whether it is done would hold the page until it was; asking a fence behind it does not. */
+  private async linked() {
+    const gl = this.renderer.getContext() as WebGL2RenderingContext;
+    this.renderer.compile(this.scene, this.cam);
+    const fence = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
+    gl.flush();
+    // clientWaitSync with a flush would hold the page as well.
+    while (fence && !gl.isContextLost() && gl.getSyncParameter(fence, gl.SYNC_STATUS) !== gl.SIGNALED) await new Promise((r) => setTimeout(r, 60));
+    gl.deleteSync(fence);
   }
 
   resize(w: number, h: number, dpr: number) {

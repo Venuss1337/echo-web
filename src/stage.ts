@@ -478,6 +478,15 @@ export async function film() {
     compiled.add(p);
     await world.compile([p]);
   }
+  // Where linking stops the drawing, all of it is done before there is a drawing to stop. The opening is not for interrupting.
+  if (world.serial)
+    for (const p of PROGRAMS) {
+      if (gone()) break;
+      if (compiled.has(p)) continue;
+      compiled.add(p);
+      await world.compile([p]);
+      root.dataset.cut = String(compiled.size);
+    }
   for (let n = 0; n < 80 && world.panels.some((p) => p.o > 0 && !p.tex); n++) {
     await new Promise((done) => setTimeout(done, 50));
     arriving();

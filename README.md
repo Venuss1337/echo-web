@@ -6,7 +6,7 @@
 
 <p align="center">
   The official website of ECHO, a local-first music player for Windows.<br />
-  <a href="https://github.com/Venuss1337/echo">The player itself lives here.</a>
+  <a href="https://echo.wiktorfila.dev">echo.wiktorfila.dev</a> · <a href="https://github.com/Venuss1337/echo">The player itself lives here.</a>
 </p>
 
 <p align="center">
@@ -34,7 +34,7 @@ While the film is being prepared, the sheet is blank but not empty: a paper ring
 
 ## ECHO
 
-[ECHO](https://github.com/Venuss1337/echo) is an open-source desktop music player for Windows, built around the music files you own: local playback, an indexed library, playlists, favourites and history, an immersive Now Playing lit by each sleeve, a compact edition, and internet radio. Its interface is called Atmosphere 2.0. It is in development and has no public release yet.
+[ECHO](https://github.com/Venuss1337/echo) is an open-source desktop music player for Windows, built around the music files you own: local playback, an indexed library, playlists, favourites and history, an immersive Now Playing lit by each sleeve, a compact edition, and internet radio. Its interface is called Atmosphere 2.0. [Version 1.0.0](https://github.com/Venuss1337/echo/releases/tag/v1.0.0) is available for Windows 10 and 11.
 
 ## Made with
 
@@ -52,7 +52,7 @@ bun run preview    # serve dist/
 bun run test       # Playwright against dist/, on a machine with a GPU
 ```
 
-Release status and links are in [site.config.ts](site.config.ts). Hosting is described in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+The address, release and download links are in [site.config.ts](site.config.ts). Hosting is described in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Rights
 

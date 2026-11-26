@@ -5,12 +5,11 @@
 
 export const site = {
   /**
-   * The public address, from the SITE_URL environment variable at build time, for example
-   * https://example.com or https://venuss1337.github.io/echo-web.
-   * Until it is set, nothing that needs an absolute address is written: no canonical link,
-   * no sitemap, no og:url and no og:image.
+   * The public address, without a trailing slash. It writes the canonical link, og:url, og:image,
+   * the sitemap and the addresses in the structured data. SITE_URL at build time overrides it,
+   * for example to build the site for another host.
    */
-  url: (process.env.SITE_URL ?? '').trim().replace(/\/+$/, ''),
+  url: (process.env.SITE_URL?.trim() || 'https://echo.wiktorfila.dev').replace(/\/+$/, ''),
   name: 'ECHO',
   title: 'ECHO, a local-first music player for Windows',
   description:
@@ -26,24 +25,28 @@ export const site = {
  * What the page says about getting ECHO. Each string is one line of type on the page,
  * broken by hand, so keep them about as long as they are.
  *
- * When a public release exists: set `available`, give `version` and `download`, rewrite the
- * lines, and put the download first in `links`. Nothing else needs to change.
+ * For a new release: change `version` (check the installer's name on the release),
+ * and the version in `status`. Nothing else needs to change.
  */
+const version = '1.0.0';
+/** The installer, exactly as published on the release. */
+const download = `https://github.com/Venuss1337/echo/releases/download/v${version}/ECHO-${version}-windows-x64-setup.exe`;
+
 export const release = {
-  available: false,
-  version: '',
-  download: '',
+  available: true,
+  version,
+  download,
   /** On the cover, bottom right. */
-  cover: ['For Windows. Free, open source,', 'and still being made.'],
+  cover: ['For Windows. Free, open source,', 'and out now.'],
   /** At the end, beside the pattern. */
   status: [
-    'There is no public installer. Local playback,',
-    'the library and radio run in private builds.',
-    'A public one waits on hardware testing and',
-    'clearing the decoder for redistribution.',
+    'ECHO 1.0.0 is out, for Windows 10 and 11,',
+    '64-bit. It installs for you alone, without',
+    'administrator rights. Its notes, checksums',
+    'and sources are with the release on GitHub.',
   ],
   links: [
-    { text: 'Read the source on GitHub', href: 'https://github.com/Venuss1337/echo' },
-    { text: 'See what is left to do', href: 'https://github.com/Venuss1337/echo/blob/main/docs/ROADMAP.md' },
+    { text: 'Download for Windows', href: download },
+    { text: 'Read the source on GitHub', href: site.repository },
   ],
 };

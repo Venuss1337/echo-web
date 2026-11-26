@@ -6,7 +6,7 @@ test.describe('without running anything, the page', () => {
   test('says what ECHO is, what it does and where it is', async ({ page }) => {
     await page.goto('./');
     const text = (await page.locator('main').innerText()).replace(/\s+/g, ' ');
-    for (const s of ['For Windows', 'open source', 'FLAC, MP3, WAV, OGG, AAC and M4A', 'Atmosphere 2.0', 'playlists, favourites and history', 'Radio Browser', 'compact edition', 'GPL-3.0-or-later', 'Nothing is uploaded', 'no public installer'])
+    for (const s of ['For Windows', 'open source', 'FLAC, MP3, WAV, OGG, AAC and M4A', 'Atmosphere 2.0', 'playlists, favourites and history', 'Radio Browser', 'compact edition', 'GPL-3.0-or-later', 'Nothing is uploaded', 'ECHO 1.0.0 is out'])
       expect(text).toContain(s);
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('h1')).toContainText('ECHO');
@@ -20,8 +20,9 @@ test.describe('without running anything, the page', () => {
     const links = await page.locator('a').evaluateAll((e) => e.map((a) => a.getAttribute('href')!));
     for (const l of links.filter((h) => h.startsWith('#'))) await expect(page.locator(l)).toHaveCount(1);
     expect(links).toContain('https://github.com/Venuss1337/echo');
-    expect(links.filter((h) => /\.(exe|msi|msix|zip)$/i.test(h))).toEqual([]);
-    for (const src of await page.locator('link[href], img[src], script[src]').evaluateAll((e) => e.map((x) => x.getAttribute('href') ?? x.getAttribute('src')!)))
+    // The one installer is the one published with the release.
+    expect(links.filter((h) => /\.(exe|msi|msix|zip)$/i.test(h))).toEqual(['https://github.com/Venuss1337/echo/releases/download/v1.0.0/ECHO-1.0.0-windows-x64-setup.exe']);
+    for (const src of await page.locator('link[href]:not([rel=canonical]), img[src], script[src]').evaluateAll((e) => e.map((x) => x.getAttribute('href') ?? x.getAttribute('src')!)))
       expect((await request.get(new URL(src, page.url()).href)).status(), src).toBe(200);
   });
 });
@@ -38,7 +39,10 @@ test('introduces itself accurately', async ({ page, request }) => {
   const app = graph.find((g) => g['@type'] === 'SoftwareApplication')!;
   expect(app.operatingSystem).toMatch(/Windows/);
   // Nothing is claimed that has not happened.
-  for (const k of ['aggregateRating', 'review', 'offers', 'downloadUrl', 'datePublished', 'softwareVersion']) expect(app[k]).toBeUndefined();
+  for (const k of ['aggregateRating', 'review', 'offers']) expect(app[k]).toBeUndefined();
+  expect(app.softwareVersion).toBe('1.0.0');
+  expect(app.downloadUrl).toBe('https://github.com/Venuss1337/echo/releases/download/v1.0.0/ECHO-1.0.0-windows-x64-setup.exe');
+  await expect(page.locator('link[rel=canonical]')).toHaveAttribute('href', 'https://echo.wiktorfila.dev/');
   const robots = await (await request.get('./robots.txt')).text();
   expect(robots).toContain('Allow: /');
   expect(robots).not.toContain('Disallow');

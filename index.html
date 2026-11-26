@@ -29,10 +29,11 @@
         var watch = setInterval(function () {
           if (d.classList.contains('ready') || !d.classList.contains('live')) return clearInterval(watch);
           if (document.hidden) return;
-          if (at !== d.dataset.load) { at = d.dataset.load; since = 0; }
+          var now = [d.dataset.load, d.dataset.cut].join();
+          if (at !== now) { at = now; since = 0; }
           all += 0.5;
           since += 0.5;
-          if (since >= (at === '2' ? 24 : 12) || all >= 45) prints();
+          if (since >= (d.dataset.load === '2' ? 24 : 12) || all >= 45) prints();
         }, 500);
         // The script never came.
         addEventListener('error', function (e) { if (e.target.tagName === 'SCRIPT') prints(); }, true);
